@@ -6,6 +6,4 @@ ADD . /app/
 
 WORKDIR /app
 
-RUN go build -o main .
-
-ENTRYPOINT /app/main
+ENTRYPOINT go run QueueBot
