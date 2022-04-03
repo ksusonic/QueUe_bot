@@ -9,6 +9,10 @@ import (
 )
 
 func main() {
+	if os.Getenv("TOKEN") == "" {
+		log.Fatal("Empty token. Set token via \"export TOKEN='<>'\"")
+	}
+
 	b, err := tele.NewBot(
 		tele.Settings{
 			Token:  os.Getenv("TOKEN"),
