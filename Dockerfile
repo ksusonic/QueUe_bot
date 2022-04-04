@@ -6,4 +6,7 @@ ADD . /app/
 
 WORKDIR /app
 
-ENTRYPOINT go run QueueBot
+RUN  go get -u -v all
+RUN  go build -o main .
+
+ENTRYPOINT ["/app/main"]
