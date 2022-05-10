@@ -54,7 +54,7 @@ func TestQueue_GetQueuePos(t *testing.T) {
 	q.Push(q1)
 	q.Push(q2)
 	q.Push(q3)
-	if q.GetQueuePos([]string{"testUser2"}) != 2 {
-		t.Fatal("Expected 2, got: ", q.GetQueuePos([]string{"testUser2"}))
+	if q.GetQueuePos("testUser2") != 2 {
+		t.Fatal("Expected 2, got: ", q.GetQueuePos("testUser2"))
 	}
 }
