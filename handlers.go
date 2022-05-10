@@ -28,13 +28,13 @@ func MakeGroupHandlers(g *tele.Group, q *Queue) {
 		}
 		return c.Send("Payload for push in dev")
 	})
-	//g.Handle("/pop", func(c tele.Context) error {
-	//	member, err := q.Pop()
-	//	if err != nil {
-	//		return c.Send("Очередь пуста.")
-	//	}
-	//	return c.Send("@" + member.Usernames[0] + member.Message + " вышел из очереди.") // TODO for users
-	//})
+	g.Handle("/pop", func(c tele.Context) error {
+		member, err := q.Pop(c.Sender().Username)
+		if err != nil {
+			return c.Send("Очередь пуста.")
+		}
+		return c.Send("@" + member.Usernames[0] + member.Message + " вышел из очереди.") // TODO for users
+	})
 	g.Handle("/queue", func(c tele.Context) error {
 		if q.Len() == 0 {
 			return c.Send("Очередь пуста 🍻")
