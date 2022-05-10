@@ -22,26 +22,26 @@ func MakeGroupHandlers(g *tele.Group, q *Queue) {
 		payload := c.Message().Payload
 		if payload == "" {
 			username := c.Sender().Username
-			q.Push(QueueMember{Username: username})
+			q.Push(QueueMember{Usernames: []string{username}})
 			currentLen := strconv.Itoa(q.Len())
 			return c.Send("@" + username + " " + currentLen + "й в очереди.")
 		}
 		return c.Send("Payload for push in dev")
 	})
-	g.Handle("/pop", func(c tele.Context) error {
-		member, err := q.Pop()
-		if err != nil {
-			return c.Send("Очередь пуста.")
-		}
-		return c.Send("@" + member.Username + member.Message + " вышел из очереди.") // TODO for users
-	})
+	//g.Handle("/pop", func(c tele.Context) error {
+	//	member, err := q.Pop()
+	//	if err != nil {
+	//		return c.Send("Очередь пуста.")
+	//	}
+	//	return c.Send("@" + member.Usernames[0] + member.Message + " вышел из очереди.") // TODO for users
+	//})
 	g.Handle("/queue", func(c tele.Context) error {
 		if q.Len() == 0 {
 			return c.Send("Очередь пуста 🍻")
 		}
 		var message string
 		for member := range q.Members {
-			message += strconv.Itoa(member+1) + ": @" + q.Members[member].Username // TODO for users
+			message += strconv.Itoa(member+1) + ": @" + q.Members[member].Usernames[0] // TODO for users
 			if q.Members[member].Message != "" {
 				message += " c " + q.Members[member].Message
 			}
