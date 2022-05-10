@@ -64,14 +64,12 @@ func (q *Queue) Push(x QueueMember) {
 	q.Members = append(q.Members, x)
 }
 
-func (q *Queue) GetQueuePos(usernames []string) int {
+func (q *Queue) GetQueuePos(luser string) int {
 	// Returns position of user(s) in queue if exists. Else -1
 	for i, member := range q.Members {
 		for _, ruser := range member.Usernames {
-			for _, luser := range usernames {
-				if luser == ruser {
-					return i + 1
-				}
+			if luser == ruser {
+				return i + 1
 			}
 		}
 	}
