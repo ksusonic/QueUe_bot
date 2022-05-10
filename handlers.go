@@ -17,8 +17,8 @@ func MakeGeneralHandlers(b *tele.Bot) {
 	})
 }
 
-func MakeGroupHandlers(g *tele.Group, q *Queue) {
-	g.Handle("/push", func(c tele.Context) error {
+func MakeGroupHandlers(b *tele.Bot, q *Queue) {
+	b.Handle("/push", func(c tele.Context) error {
 		payload := c.Message().Payload
 		if payload == "" {
 			username := c.Sender().Username
@@ -28,7 +28,7 @@ func MakeGroupHandlers(g *tele.Group, q *Queue) {
 		}
 		return c.Send("Payload for push in dev")
 	})
-	g.Handle("/pop", func(c tele.Context) error {
+	b.Handle("/pop", func(c tele.Context) error {
 		if q.Empty() {
 			return c.Send("Очередь пуста.")
 		}
@@ -38,7 +38,7 @@ func MakeGroupHandlers(g *tele.Group, q *Queue) {
 		}
 		return c.Send("@" + member.Usernames[0] + member.Message + " вышел из очереди.") // TODO for users
 	})
-	g.Handle("/queue", func(c tele.Context) error {
+	b.Handle("/queue", func(c tele.Context) error {
 		if q.Len() == 0 {
 			return c.Send("Очередь пуста 🍻")
 		}
