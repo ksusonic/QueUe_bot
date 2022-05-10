@@ -15,6 +15,17 @@ type QueueMember struct {
 	Message   string   `json:"message"`
 }
 
+func (qm *QueueMember) UsernamesString() string {
+	var s string
+	for i, username := range qm.Usernames {
+		s += "@" + username
+		if i != len(qm.Usernames)-1 {
+			s += " "
+		}
+	}
+	return s
+}
+
 type Queue struct {
 	Id      uint32         `json:"queue_id"`
 	Title   string         `json:"title"`
@@ -52,17 +63,21 @@ func (q *Queue) DebugString() string {
 	return sb.String()
 }
 
-func (q *Queue) Swap(ipos, jpos int) (bool, error) {
+func (q *Queue) Swap(ipos, jpos int) error {
+	if ipos == jpos {
+		return errors.New("same index")
+	}
+
 	i, j := ipos-1, jpos-1
 	if i < 0 || j < 0 {
-		return false, errors.New("one of indexes <= 0")
+		return errors.New("one of indexes <= 0")
 	}
 	if q.Len() <= i || q.Len() <= j {
-		return false, errors.New("one of indexes is out of range")
+		return errors.New("one of indexes is out of range")
 	}
 
 	q.Members[i], q.Members[j] = q.Members[j], q.Members[i]
-	return true, nil
+	return nil
 }
 
 func (q *Queue) Push(x QueueMember) {
