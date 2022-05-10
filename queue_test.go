@@ -26,6 +26,11 @@ func AssertQueue(t *testing.T, q Queue, members ...QueueMember) {
 	}
 }
 
+func TestQueueMember_UsernamesString(t *testing.T) {
+	qm := QueueMember{Usernames: []string{"dandex", "alsundex"}}
+	assert.Equal(t, qm.UsernamesString(), "@dandex @alsundex")
+}
+
 func TestQueue_Push_Len(t *testing.T) {
 	q := Queue{}
 	q.Push(q1)
@@ -42,16 +47,16 @@ func TestQueue_Swap(t *testing.T) {
 	q := Queue{}
 	q.Push(q1)
 	q.Push(q2)
-	b, mess := q.Swap(1, 2)
-	if b == false || mess != nil {
-		t.Fatal("Expected OK, got message ", mess)
+	err := q.Swap(1, 2)
+	if err != nil {
+		t.Fatal("Expected OK, got message ", err)
 	}
 	if q.Members[0].Usernames[0] != q2.Usernames[0] {
 		t.Fatal("Expected to swap 1 2, got incorrect", q.DebugString())
 	}
 
-	b, mess = q.Swap(2, 3)
-	if b != false || mess == nil {
+	err = q.Swap(2, 3)
+	if err == nil {
 		t.Fatal("Expected NOT OK, got success. Queue: ", q.DebugString())
 	}
 }

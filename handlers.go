@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/asaskevich/govalidator"
 	tele "gopkg.in/telebot.v3"
 	"strconv"
+	"strings"
 )
 
 func MakeGeneralHandlers(b *tele.Bot) {
@@ -51,5 +53,23 @@ func MakeGroupHandlers(b *tele.Bot, q *Queue) {
 			message += "\n"
 		}
 		return c.Send(message, tele.Silent)
+	})
+	b.Handle("/swap", func(c tele.Context) error {
+		if len(c.Message().Payload) == 0 {
+			return c.Send("Чтобы поменяться местами, введи номера в очереди, например: /swap 1 2")
+		}
+		if q.Len() == 0 {
+			return c.Send("Очередь пуста 🍻")
+		}
+		splitted := strings.Split(c.Message().Payload, " ")
+		if len(splitted) >= 2 && govalidator.IsInt(splitted[0]) && govalidator.IsInt(splitted[1]) {
+			l, _ := strconv.ParseInt(splitted[0], 10, 32)
+			r, _ := strconv.ParseInt(splitted[1], 10, 32)
+			err := q.Swap(int(l), int(r))
+			if err == nil {
+				return c.Send(q.Members[r-1].UsernamesString() + " и " + q.Members[l-1].UsernamesString() + " поменялись местами")
+			}
+		}
+		return c.Send("Не могу этого сделать :/")
 	})
 }
