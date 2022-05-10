@@ -17,17 +17,14 @@ func main() {
 			Token:  os.Getenv("TOKEN"),
 			Poller: &tele.LongPoller{Timeout: 10 * time.Second}})
 
-	conf := GetConf()
 	queue := Queue{}
 
-	allowedGroup := b.Group()
-	allowedGroup.Use(GroupsWhitelist(conf.Restrictions.Group))
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
 	MakeGeneralHandlers(b)
-	MakeGroupHandlers(allowedGroup, &queue) // more privileged
+	MakeGroupHandlers(b, &queue)
 	b.Start()
 }
