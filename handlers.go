@@ -29,9 +29,12 @@ func MakeGroupHandlers(g *tele.Group, q *Queue) {
 		return c.Send("Payload for push in dev")
 	})
 	g.Handle("/pop", func(c tele.Context) error {
+		if q.Empty() {
+			return c.Send("Очередь пуста.")
+		}
 		member, err := q.Pop(c.Sender().Username)
 		if err != nil {
-			return c.Send("Очередь пуста.")
+			return c.Send("@" + c.Sender().Username + " не стоял в очереди -_-")
 		}
 		return c.Send("@" + member.Usernames[0] + member.Message + " вышел из очереди.") // TODO for users
 	})

@@ -26,6 +26,10 @@ func (q *Queue) Len() int {
 	return len(q.Members)
 }
 
+func (q *Queue) Empty() bool {
+	return len(q.Members) == 0
+}
+
 func (q *Queue) DebugString() string {
 	var sb strings.Builder
 
