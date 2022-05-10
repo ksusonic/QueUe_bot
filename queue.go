@@ -4,6 +4,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"gopkg.in/telebot.v3"
 	"strconv"
 	"strings"
@@ -74,4 +75,16 @@ func (q *Queue) GetQueuePos(luser string) int {
 		}
 	}
 	return -1
+}
+
+func (q *Queue) Pop(username string) (QueueMember, error) {
+	pos := q.GetQueuePos(username)
+	if pos != -1 {
+		posIndex := pos - 1
+		member := q.Members[posIndex]
+		q.Members = append(q.Members[:posIndex], q.Members[posIndex+1:]...)
+		return member, nil
+	} else {
+		return QueueMember{}, fmt.Errorf("no such member in queue")
+	}
 }
