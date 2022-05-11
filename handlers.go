@@ -22,13 +22,42 @@ func MakeGeneralHandlers(b *tele.Bot) {
 func MakeGroupHandlers(b *tele.Bot, q *Queue) {
 	b.Handle("/push", func(c tele.Context) error {
 		payload := c.Message().Payload
-		if payload == "" {
+		if len(payload) == 0 {
 			username := c.Sender().Username
 			q.Push(QueueMember{Usernames: []string{username}})
 			currentLen := strconv.Itoa(q.Len())
-			return c.Send("@" + username + " " + currentLen + "й в очереди.")
+			return c.Send("@" + username + " " + currentLen + " в очереди.")
+		} else {
+			splitted := strings.Split(payload, " ")
+			var message string
+			var usernames []string
+			var addMyself = true
+			for _, w := range splitted {
+				if w[0] == '@' && len(w) > 1 {
+					usernames = append(usernames, w[1:])
+				} else if w == "#nome" {
+					addMyself = false
+				} else {
+					message += w
+				}
+			}
+			if addMyself {
+				usernames = append(usernames, c.Sender().Username)
+			}
+			member := QueueMember{
+				Usernames: usernames,
+				Message:   message,
+			}
+			q.Push(member)
+			return c.Send(member.UsernamesString() + " " + strconv.Itoa(q.Len()) + "й в очереди" +
+				func(s string) string {
+					if len(s) > 0 {
+						return " с темой: " + s
+					} else {
+						return ""
+					}
+				}(message))
 		}
-		return c.Send("Payload for push in dev")
 	})
 	b.Handle("/pop", func(c tele.Context) error {
 		if q.Empty() {
