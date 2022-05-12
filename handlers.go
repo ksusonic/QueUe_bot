@@ -35,7 +35,7 @@ func MakeGroupHandlers(b *tele.Bot, q *Queue) {
 			for _, w := range splitted {
 				if w[0] == '@' && len(w) > 1 {
 					usernames = append(usernames, w[1:])
-				} else if w == "#nome" {
+				} else if w == "nome" {
 					addMyself = false
 				} else {
 					message += w
@@ -67,7 +67,13 @@ func MakeGroupHandlers(b *tele.Bot, q *Queue) {
 		if err != nil {
 			return c.Send("@" + c.Sender().Username + " не стоял в очереди -_-")
 		}
-		return c.Send("@" + member.Usernames[0] + member.Message + " вышел из очереди.") // TODO for users
+		var message = member.UsernamesString() + member.Message + " вышел из очереди.\n"
+		if c.Message().Payload == "" || (!strings.Contains(c.Message().Payload, "silent") && q.Len() > 0) {
+			if next, err := q.FakePop(); err == nil {
+				message += next.UsernamesString() + ", ваша очередь."
+			}
+		}
+		return c.Send(message)
 	})
 	b.Handle("/queue", func(c tele.Context) error {
 		if q.Len() == 0 {
@@ -75,7 +81,7 @@ func MakeGroupHandlers(b *tele.Bot, q *Queue) {
 		}
 		var message string
 		for member := range q.Members {
-			message += strconv.Itoa(member+1) + ": @" + q.Members[member].Usernames[0] // TODO for users
+			message += strconv.Itoa(member+1) + ": " + q.Members[member].UsernamesString()
 			if q.Members[member].Message != "" {
 				message += " c " + q.Members[member].Message
 			}

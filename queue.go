@@ -107,3 +107,10 @@ func (q *Queue) Pop(username string) (QueueMember, error) {
 		return QueueMember{}, fmt.Errorf("no such member in queue")
 	}
 }
+
+func (q *Queue) FakePop() (QueueMember, error) {
+	if q.Empty() {
+		return QueueMember{}, fmt.Errorf("queue is empty")
+	}
+	return q.Members[0], nil
+}
